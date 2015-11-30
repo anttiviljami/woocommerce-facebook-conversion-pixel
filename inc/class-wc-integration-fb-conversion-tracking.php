@@ -18,6 +18,7 @@ class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
     $this->event_viewcontent = 'no' !== $this->get_option( 'fb_event_viewcontent' );
     $this->event_addtocart = 'no' !== $this->get_option( 'fb_event_addtocart' );
     $this->event_checkout = 'no' !== $this->get_option( 'fb_event_checkout' );
+    $this->event_purchase = 'no' !== $this->get_option( 'fb_event_purchase' );
 
     // add WooCommerce settings tab page
     add_action( 'woocommerce_update_options_integration_' .  $this->id, array( &$this, 'process_admin_options' ) );
@@ -26,8 +27,8 @@ class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
     add_action( 'wp_head', array( &$this, 'fb_tracking_pixel') );
 
     // add to cart event
-    add_action( 'woocommerce_after_add_to_cart_button', array( &$this, 'add_to_cart' ) );
-    add_action( 'woocommerce_pagination', array( &$this, 'loop_add_to_cart' ) );
+    add_action( 'woocommerce_after_add_to_cart_button', array( &$this, 'add_to_cart' ) ); // single product
+    add_action( 'woocommerce_pagination', array( &$this, 'loop_add_to_cart' ) ); // loop
 
   }
 
@@ -58,6 +59,12 @@ class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
         'title' => __( 'Track InitiateCheckout Events', 'wc-fb-conversion-tracking' ),
         'type' => 'checkbox',
         'label' => __( 'Enable event tracking for when a user enters the Checkout page.', 'wc-fb-conversion-tracking' ),
+        'default' => 'yes',
+      ),
+      'fb_event_purchase' => array(
+        'title' => __( 'Track Purchase Events', 'wc-fb-conversion-tracking' ),
+        'type' => 'checkbox',
+        'label' => __( 'Enable event tracking for when a user has succesfully made an order.', 'wc-fb-conversion-tracking' ),
         'default' => 'yes',
       ),
     ));
@@ -136,7 +143,16 @@ fbq('track', 'ViewContent', <?php echo json_encode( $params ); ?>);
     $params['currency'] = get_woocommerce_currency();
     $params['content_ids'] = $productids;
 ?>
-    fbq('track', 'InitiateCheckout', <?php echo json_encode( $params ); ?>);
+fbq('track', 'InitiateCheckout', <?php echo json_encode( $params ); ?>);
+<?php endif; ?>
+
+<?php if( is_order_received_page() && $this->event_purchase ) : ?>
+<?php
+    global $product;
+    $params = array();
+    //TODO
+?>
+fbq('track', 'Purchase', <?php echo json_encode( $params ); ?>);
 <?php endif; ?>
 
 </script>
