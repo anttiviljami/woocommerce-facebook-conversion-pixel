@@ -14,8 +14,10 @@ class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
     $this->init_settings();
 
     // load our preset tracking id from options
-    $this->fbid = $this->get_option( 'fbid', false );
-    $this->event_addtocart = $this->get_option( 'fb_event_addtocart', true );
+    $this->fbid = $this->get_option( 'fbid' );
+    $this->event_viewcontent = 'no' !== $this->get_option( 'fb_event_viewcontent' );
+    $this->event_addtocart = 'no' !== $this->get_option( 'fb_event_addtocart' );
+    $this->event_checkout = 'no' !== $this->get_option( 'fb_event_checkout' );
 
     // add WooCommerce settings tab page
     add_action( 'woocommerce_update_options_integration_' .  $this->id, array( &$this, 'process_admin_options' ) );
@@ -40,10 +42,22 @@ class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
         'description' => __( "The numerical unique ID from your Facebook Pixel Tracking Code. Copied from this line: <code>fbq('init', '<your ID>');</code>", 'wc-fb-conversion-tracking' ),
         'placeholder' => '123456789',
       ),
+      'fb_event_viewcontent' => array(
+        'title' => __( 'Track ViewContent Events', 'wc-fb-conversion-tracking' ),
+        'type' => 'checkbox',
+        'label' => __( 'Enable event tracking for when a user views a product page.', 'wc-fb-conversion-tracking' ),
+        'default' => 'yes',
+      ),
       'fb_event_addtocart' => array(
         'title' => __( 'Track AddToCart Events', 'wc-fb-conversion-tracking' ),
         'type' => 'checkbox',
         'label' => __( 'Enable event tracking for when a user adds a product to their shopping cart.', 'wc-fb-conversion-tracking' ),
+        'default' => 'yes',
+      ),
+      'fb_event_checkout' => array(
+        'title' => __( 'Track InitiateCheckout Events', 'wc-fb-conversion-tracking' ),
+        'type' => 'checkbox',
+        'label' => __( 'Enable event tracking for when a user enters the Checkout page.', 'wc-fb-conversion-tracking' ),
         'default' => 'yes',
       ),
     ));
@@ -54,7 +68,15 @@ class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
    */
   public function add_to_cart() {
     if( $this->event_addtocart ) {
-      $this->fb_track_event( 'AddToCart', '.button.alt' );
+      global $product;
+      $params = array();
+      $params['content_name'] = $product->get_title();
+      $params['content_ids'] = array( $product->id );
+      $params['content_type'] = 'product';
+      $params['value'] = floatval( $product->get_price() );
+      $params['currency'] = get_woocommerce_currency();
+      // TODO: variable products
+      $this->fb_track_event( 'AddToCart', '.button.alt', $params );
     }
   }
 
@@ -85,7 +107,39 @@ t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','//connect.facebook.net/en_US/fbevents.js');
 
 fbq('init', '<?php echo esc_html( $this->fbid ); ?>');
-fbq('track', "PageView");</script>
+fbq('track', 'PageView');
+
+<?php if( is_singular( 'product' ) && $this->event_viewcontent ) : ?>
+<?php
+    global $product;
+    $params = array();
+    $params['content_name'] = $product->get_title();
+    $params['content_ids'] = array( $product->id );
+    $params['content_type'] = 'product';
+    $params['value'] = floatval( $product->get_price() );
+    $params['currency'] = get_woocommerce_currency();
+?>
+fbq('track', 'ViewContent', <?php echo json_encode( $params ); ?>);
+<?php endif; ?>
+
+<?php if( is_checkout() && $this->event_checkout ) : ?>
+<?php
+    // get $cart to params
+    $cart = WC()->cart->get_cart();
+    $productids = array();
+    foreach($cart as $id => $product) {
+      $productids[] = $product['product_id'];
+    }
+    $params = array();
+    $params['num_items'] = WC()->cart->cart_contents_count;
+    $params['value'] = WC()->cart->total;
+    $params['currency'] = get_woocommerce_currency();
+    $params['content_ids'] = $productids;
+?>
+    fbq('track', 'InitiateCheckout', <?php echo json_encode( $params ); ?>);
+<?php endif; ?>
+
+</script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=<?php echo esc_html( $this->fbid ); ?>&ev=PageView&noscript=1"
 /></noscript>
@@ -104,7 +158,13 @@ src="https://www.facebook.com/tr?id=<?php echo esc_html( $this->fbid ); ?>&ev=Pa
 <script>
 (function($) {
   $('<?php echo esc_js( $selector ); ?>').click(function() {
-    fbq('track', '<?php echo esc_js( $name ); ?>');
+<?php if( !empty( $params ) ) : ?>
+    var params = <?php echo json_encode( $params ); ?>;
+<?php else : ?>
+    var params = {};
+<?php endif; ?>
+
+    fbq('track', '<?php echo esc_js( $name ); ?>', params);
   });
   console.log('Facebook Tracking Enabled for:', $('<?php echo esc_js( $selector ); ?>'));
 })(jQuery);
