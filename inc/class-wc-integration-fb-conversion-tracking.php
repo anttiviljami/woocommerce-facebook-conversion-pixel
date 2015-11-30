@@ -1,7 +1,9 @@
 <?php
 
-
 class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
+  /**
+   * Constructor, sets up all the actions
+   */
   public function __construct() {
     $this->id                 = 'wc-fb-conversion-tracking';
     $this->method_title       = __( 'Facebook', 'wc-fb-conversion-tracking' );
@@ -13,12 +15,18 @@ class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
 
     // load our preset tracking id from options
     $this->fbid = $this->get_option( 'fbid', false );
+    $this->event_addtocart = $this->get_option( 'fb_event_addtocart', true );
 
     // add WooCommerce settings tab page
-    add_action( 'woocommerce_update_options_integration_' .  $this->id, array( $this, 'process_admin_options' ) );
+    add_action( 'woocommerce_update_options_integration_' .  $this->id, array( &$this, 'process_admin_options' ) );
 
     // add the tracking pixel to all pages in the frontend
-    add_action( 'wp_head', array( $this, 'fb_tracking_pixel') );
+    add_action( 'wp_head', array( &$this, 'fb_tracking_pixel') );
+
+    // add to cart event
+    add_action( 'woocommerce_after_add_to_cart_button', array( &$this, 'add_to_cart' ) );
+    add_action( 'woocommerce_pagination', array( &$this, 'loop_add_to_cart' ) );
+
   }
 
   /**
@@ -39,6 +47,24 @@ class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
         'default' => 'yes',
       ),
     ));
+  }
+
+  /**
+   * Event tracking for product page add to cart
+   */
+  public function add_to_cart() {
+    if( $this->event_addtocart ) {
+      $this->fb_track_event( 'AddToCart', '.button.alt' );
+    }
+  }
+
+  /**
+   * Event tracking for loop add to cart
+   */
+  public function loop_add_to_cart() {
+    if( $this->event_addtocart ) {
+      $this->fb_track_event( 'AddToCart', '.button.add_to_cart_button' );
+    }
   }
 
   /**
@@ -64,6 +90,25 @@ fbq('track', "PageView");</script>
 src="https://www.facebook.com/tr?id=<?php echo esc_html( $this->fbid ); ?>&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Facebook Pixel Code -->
+<?php
+  }
+
+  /**
+   * Output inline javascript to bind an fbq event to the $.click() event of a selector
+   */
+  public function fb_track_event( $name, $selector, $params = array() ) {
+    if( !$this->fbid ) {
+      return;
+    }
+?>
+<script>
+(function($) {
+  $('<?php echo esc_js( $selector ); ?>').click(function() {
+    fbq('track', '<?php echo esc_js( $name ); ?>');
+  });
+  console.log('Facebook Tracking Enabled for:', $('<?php echo esc_js( $selector ); ?>'));
+})(jQuery);
+</script>
 <?php
   }
 }
