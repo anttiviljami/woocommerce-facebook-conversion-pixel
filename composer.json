@@ -1,0 +1,13 @@
+{
+    "name": "anttiviljami/wc-fb-conversion-tracking",
+    "description": "Set up the Facebook conversion pixel and event tracking for WooCommerce",
+    "type": "wordpress-plugin",
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "Antti Kuosmanen",
+            "email": "antti@seravo.fi"
+        }
+    ],
+    "require": {}
+}

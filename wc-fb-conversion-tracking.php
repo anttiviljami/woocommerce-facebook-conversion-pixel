@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin name: WooCommerce Facebook Pixel Events
- * Plugin URI: https://github.com/Seravo/woocommerce-facebook-pixel-events
+ * Plugin name: WooCommerce Facebook Conversion Tracking
+ * Plugin URI: https://github.com/anttiviljami/wc-fb-conversion-tracking
  * Description: Set up the Facebook conversion pixel and event tracking for WooCommerce
  * Version: 0.1
  * Author: Seravo Oy
  * Author: http://seravo.fi
  * License: GPLv3
- * Text Domain: wc-fb-pixel-events
+ * Text Domain: wc-fb-conversion-tracking
  */
 
 /** Copyright 2015 Seravo Oy
@@ -23,15 +23,15 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-if (!class_exists('WooCommerce_Facebook_Pixel_Events')) {
-  class WooCommerce_Facebook_Pixel_Events {
+if (!class_exists('WooCommerce_Facebook_Conversion_Tracking')) {
+  class WooCommerce_Facebook_Conversion_Tracking {
     public static $instance;
 
     private $fbid = false; // this is wehere we store the tracking id
 
     public static function init() {
       if ( is_null( self::$instance ) ) {
-        self::$instance = new WooCommerce_Facebook_Pixel_Events();
+        self::$instance = new WooCommerce_Facebook_Conversion_Tracking();
       }
       return self::$instance;
     }
@@ -42,8 +42,8 @@ if (!class_exists('WooCommerce_Facebook_Pixel_Events')) {
 
       // add WooCommerce settings tab page
       add_filter( 'woocommerce_settings_tabs_array', array( $this, 'add_settings_tab' ), 50 );
-      add_action( 'woocommerce_settings_tabs_fb_events', array( $this, 'settings_tab' ) );
-      add_action( 'woocommerce_update_options_fb_events', array( $this, 'update_settings' ) );
+      add_action( 'woocommerce_settings_tabs_fb_tracking', array( $this, 'settings_tab' ) );
+      add_action( 'woocommerce_update_options_fb_tracking', array( $this, 'update_settings' ) );
 
       // add the tracking pixel to all pages in the frontend
       add_action( 'wp_head', array( $this, 'fb_tracking_pixel') );
@@ -53,14 +53,14 @@ if (!class_exists('WooCommerce_Facebook_Pixel_Events')) {
      * Load our plugin textdomain
      */
     public static function load_our_textdomain() {
-      load_plugin_textdomain( 'wc-fb-pixel-events', false, dirname( plugin_basename(__FILE__) ) . '/lang/' );
+      load_plugin_textdomain( 'wc-fb-conversion-tracking', false, dirname( plugin_basename(__FILE__) ) . '/lang/' );
     }
 
     /**
      * Add a WooCommerce Settings tab for plugin settings
      */
     public static function add_settings_tab( $settings_tabs ) {
-      $settings_tabs['fb_events'] = __( 'Facebook', 'wc-fb-pixel-events' );
+      $settings_tabs['fb_tracking'] = __( 'Facebook', 'wc-fb-conversion-tracking' );
       return $settings_tabs;
     }
 
@@ -68,23 +68,23 @@ if (!class_exists('WooCommerce_Facebook_Pixel_Events')) {
      * User configurable settings
      */
     public static function get_settings() {
-      return apply_filters( 'wc_settings_tab_fb_events', array(
+      return apply_filters( 'wc_settings_tab_fb_tracking', array(
         'section_title' => array(
-          'name'     => __( 'Facebook Conversion Pixel', 'wc-fb-pixel-events' ),
+          'name'     => __( 'Facebook Conversion Pixel', 'wc-fb-conversion-tracking' ),
           'type'     => 'title',
           'desc'     => '',
-          'id'       => 'wc_settings_fb_events_section_title'
+          'id'       => 'wc_settings_fb_tracking_section_title'
         ),
         'title' => array(
-          'name' => __( 'Facebook Pixel ID', 'wc-fb-pixel-events' ),
+          'name' => __( 'Facebook Pixel ID', 'wc-fb-conversion-tracking' ),
           'type' => 'text',
-          'desc' => __( "The numerical unique ID from your Facebook Pixel Tracking Code. Copied from this line: <code>fbq('init', '&lt;your ID&gt;');</code>", 'wc-fb-pixel-events' ),
+          'desc' => __( "The numerical unique ID from your Facebook Pixel Tracking Code. Copied from this line: <code>fbq('init', '&lt;your ID&gt;');</code>", 'wc-fb-conversion-tracking' ),
           'placeholder' => '123456789',
           'id'   => 'wc_settings_fbid'
         ),
         'section_end' => array(
           'type' => 'sectionend',
-          'id' => 'wc_settings_fb_events_section_end'
+          'id' => 'wc_settings_fb_tracking_section_end'
         )
       ) );
     }
@@ -132,5 +132,5 @@ fbq('track', "PageView");</script>
 }
 
 // init the plugin
-$woocommerce_facebook_pixel_events = WooCommerce_Facebook_Pixel_Events::init();
+$woocommerce_facebook_conversion_tracking = WooCommerce_Facebook_Conversion_Tracking::init();
 
