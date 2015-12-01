@@ -1,13 +1,13 @@
 <?php
 
-class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
+class WC_Integration_Facebook_Conversion_Pixel extends WC_Integration {
   /**
    * Constructor, sets up all the actions
    */
   public function __construct() {
-    $this->id                 = 'wc-fb-conversion-tracking';
-    $this->method_title       = __( 'Facebook', 'wc-fb-conversion-tracking' );
-    $this->method_description = __( 'Set up the Facebook conversion pixel and event tracking for WooCommerce.', 'wc-fb-conversion-tracking' );
+    $this->id                 = 'wc-fb-conversion-pixel';
+    $this->method_title       = __( 'Facebook', 'wc-fb-conversion-pixel' );
+    $this->method_description = __( 'Set up the Facebook conversion pixel and event tracking for WooCommerce.', 'wc-fb-conversion-pixel' );
 
     // Load the settings.
     $this->init_form_fields();
@@ -36,35 +36,35 @@ class WC_Integration_Facebook_Conversion_Tracking extends WC_Integration {
    * User configurable settings
    */
   public function init_form_fields() {
-    $this->form_fields = apply_filters( 'wc_integration_fb_tracking_fields', array(
+    $this->form_fields = apply_filters( 'wc_integration_fb_conversion_pixel_fields', array(
       'fbid' => array(
-        'title' => __( 'Facebook Tracking ID', 'wc-fb-conversion-tracking' ),
+        'title' => __( 'Facebook Tracking ID', 'wc-fb-conversion-pixel' ),
         'type' => 'text',
-        'description' => __( "The numerical unique ID from your Facebook Pixel Tracking Code. Copied from this line: <code>fbq('init', '<your ID>');</code>", 'wc-fb-conversion-tracking' ),
+        'description' => __( "The numerical unique ID from your Facebook Pixel Tracking Code. Copied from this line: <code>fbq('init', '<your ID>');</code>", 'wc-fb-conversion-pixel' ),
         'placeholder' => '123456789',
       ),
       'fb_event_viewcontent' => array(
-        'title' => __( 'Track ViewContent Events', 'wc-fb-conversion-tracking' ),
+        'title' => __( 'Track ViewContent Events', 'wc-fb-conversion-pixel' ),
         'type' => 'checkbox',
-        'label' => __( 'Enable event tracking for when a user views a product page.', 'wc-fb-conversion-tracking' ),
+        'label' => __( 'Enable event tracking for when a user views a product page.', 'wc-fb-conversion-pixel' ),
         'default' => 'yes',
       ),
       'fb_event_addtocart' => array(
-        'title' => __( 'Track AddToCart Events', 'wc-fb-conversion-tracking' ),
+        'title' => __( 'Track AddToCart Events', 'wc-fb-conversion-pixel' ),
         'type' => 'checkbox',
-        'label' => __( 'Enable event tracking for when a user adds a product to their shopping cart.', 'wc-fb-conversion-tracking' ),
+        'label' => __( 'Enable event tracking for when a user adds a product to their shopping cart.', 'wc-fb-conversion-pixel' ),
         'default' => 'yes',
       ),
       'fb_event_checkout' => array(
-        'title' => __( 'Track InitiateCheckout Events', 'wc-fb-conversion-tracking' ),
+        'title' => __( 'Track InitiateCheckout Events', 'wc-fb-conversion-pixel' ),
         'type' => 'checkbox',
-        'label' => __( 'Enable event tracking for when a user enters the Checkout page.', 'wc-fb-conversion-tracking' ),
+        'label' => __( 'Enable event tracking for when a user enters the Checkout page.', 'wc-fb-conversion-pixel' ),
         'default' => 'yes',
       ),
       'fb_event_purchase' => array(
-        'title' => __( 'Track Purchase Events', 'wc-fb-conversion-tracking' ),
+        'title' => __( 'Track Purchase Events', 'wc-fb-conversion-pixel' ),
         'type' => 'checkbox',
-        'label' => __( 'Enable event tracking for when a user has succesfully made an order.', 'wc-fb-conversion-tracking' ),
+        'label' => __( 'Enable event tracking for when a user has succesfully made an order.', 'wc-fb-conversion-pixel' ),
         'default' => 'yes',
       ),
     ));
@@ -121,7 +121,7 @@ fbq('track', 'PageView');
     global $product;
     $params = array();
     $params['content_name'] = $product->get_title();
-    $params['content_ids'] = array( $product->id );
+    $params['content_ids'] = array( $product->get_sku() ? $product->get_sku() : $product->id );
     $params['content_type'] = 'product';
     $params['value'] = floatval( $product->get_price() );
     $params['currency'] = get_woocommerce_currency();
@@ -129,13 +129,38 @@ fbq('track', 'PageView');
 fbq('track', 'ViewContent', <?php echo json_encode( $params ); ?>);
 <?php endif; ?>
 
-<?php if( is_checkout() && $this->event_checkout ) : ?>
+<?php if( is_order_received_page() && $this->event_purchase ) : ?>
+<?php
+    global $wp;
+    $params = array();
+
+    $order_id = isset( $wp->query_vars['order-received'] ) ? $wp->query_vars['order-received'] : 0;
+    if( $order_id ) {
+      $order = new WC_Order( $order_id );
+      if( $order->get_items() ) {
+        $productids = array();
+        foreach ( $order->get_items() as $item ) {
+          $product = $order->get_product_from_item( $item );
+          $productids[] = $product->get_sku() ? $product->get_sku() : $product->id;
+        }
+        $params['content_ids'] = $productids;
+      }
+      $params['content_type'] = 'product';
+      $params['value'] = $order->get_total();
+      $params['currency'] = get_woocommerce_currency();
+    }
+?>
+fbq('track', 'Purchase', <?php echo json_encode( $params ); ?>);
+
+<?php elseif( is_checkout() && $this->event_checkout ) : ?>
 <?php
     // get $cart to params
     $cart = WC()->cart->get_cart();
     $productids = array();
-    foreach($cart as $id => $product) {
-      $productids[] = $product['product_id'];
+    foreach($cart as $id => $item) {
+      $product_id = $item['variation_id'] ? $item['variation_id'] : $item['product_id'];
+      $product = new WC_Product( $product_id );
+      $productids[] = $product->get_sku() ? $product->get_sku() : $product->id;
     }
     $params = array();
     $params['num_items'] = WC()->cart->cart_contents_count;
@@ -146,14 +171,6 @@ fbq('track', 'ViewContent', <?php echo json_encode( $params ); ?>);
 fbq('track', 'InitiateCheckout', <?php echo json_encode( $params ); ?>);
 <?php endif; ?>
 
-<?php if( is_order_received_page() && $this->event_purchase ) : ?>
-<?php
-    global $product;
-    $params = array();
-    //TODO
-?>
-fbq('track', 'Purchase', <?php echo json_encode( $params ); ?>);
-<?php endif; ?>
 
 </script>
 <noscript><img height="1" width="1" style="display:none"

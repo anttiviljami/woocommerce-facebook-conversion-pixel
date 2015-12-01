@@ -1,4 +1,4 @@
-# WooCommerce Facebook Conversion Tracking
+# WooCommerce Facebook Conversion Pixel
 
 Set up the Facebook conversion pixel and event tracking for WooCommerce
 

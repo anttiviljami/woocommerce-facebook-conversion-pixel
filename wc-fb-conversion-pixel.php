@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin name: WooCommerce Facebook Conversion Tracking
- * Plugin URI: https://github.com/anttiviljami/wc-fb-conversion-tracking
+ * Plugin name: WooCommerce Facebook Conversion Pixel
+ * Plugin URI: https://github.com/anttiviljami/woocommerce-facebook-conversion-pixel
  * Description: Set up the Facebook conversion pixel and event tracking for WooCommerce
  * Version: 0.1
  * Author: Seravo Oy
  * Author: http://seravo.fi
  * License: GPLv3
- * Text Domain: wc-fb-conversion-tracking
+ * Text Domain: wc-fb-conversion-pixel
  */
 
 /** Copyright 2015 Seravo Oy
@@ -23,14 +23,14 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-if ( !class_exists('WooCommerce_Facebook_Conversion_Tracking')) :
+if ( !class_exists('WooCommerce_Facebook_Conversion_Pixel')) :
 
-class WooCommerce_Facebook_Conversion_Tracking {
+class WooCommerce_Facebook_Conversion_Pixel {
   public static $instance;
 
   public static function init() {
     if ( is_null( self::$instance ) ) {
-      self::$instance = new WooCommerce_Facebook_Conversion_Tracking();
+      self::$instance = new WooCommerce_Facebook_Conversion_Pixel();
     }
     return self::$instance;
   }
@@ -44,7 +44,7 @@ class WooCommerce_Facebook_Conversion_Tracking {
    * Load our plugin textdomain
    */
   public static function load_our_textdomain() {
-    load_plugin_textdomain( 'wc-fb-conversion-tracking', false, dirname( plugin_basename(__FILE__) ) . '/lang/' );
+    load_plugin_textdomain( 'wc-fb-conversion-pixel', false, dirname( plugin_basename(__FILE__) ) . '/lang/' );
   }
 
   /**
@@ -53,7 +53,7 @@ class WooCommerce_Facebook_Conversion_Tracking {
   public static function load_integrations() {
     if ( class_exists( 'WC_Integration' ) ) {
       // load our integration class
-      include_once 'inc/class-wc-integration-fb-conversion-tracking.php';
+      include_once 'inc/class-wc-integration-fb-conversion-pixel.php';
 
       // add to the WooCommerce settings page
       add_filter( 'woocommerce_integrations', __CLASS__ . '::add_integration' );
@@ -64,7 +64,7 @@ class WooCommerce_Facebook_Conversion_Tracking {
    * Add integration settings pages
    */
   public static function add_integration($integrations) {
-    $integrations[] = 'WC_Integration_Facebook_Conversion_Tracking';
+    $integrations[] = 'WC_Integration_Facebook_Conversion_Pixel';
     return $integrations;
   }
 }
@@ -72,4 +72,4 @@ class WooCommerce_Facebook_Conversion_Tracking {
 endif;
 
 // init the plugin
-$woocommerce_facebook_conversion_tracking = WooCommerce_Facebook_Conversion_Tracking::init();
+$woocommerce_facebook_conversion_tracking = WooCommerce_Facebook_Conversion_Pixel::init();

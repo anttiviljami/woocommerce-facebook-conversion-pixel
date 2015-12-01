@@ -1,5 +1,5 @@
 {
-    "name": "anttiviljami/wc-fb-conversion-tracking",
+    "name": "anttiviljami/woocommerce-facebook-conversion-pixel",
     "description": "Set up the Facebook conversion pixel and event tracking for WooCommerce",
     "type": "wordpress-plugin",
     "license": "GPLv3",

@@ -1,4 +1,4 @@
-=== WooCommerce Facebook Conversion Tracking ===
+=== WooCommerce Facebook Conversion Pixel ===
 Contributors: Zuige
 Tags: Woocommerce, Facebook, Conversion, Tracking, Pixel, Events
 Donate link: https://seravo.fi/
