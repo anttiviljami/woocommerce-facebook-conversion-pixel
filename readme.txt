@@ -12,6 +12,14 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 Set up the Facebook conversion pixel and event tracking for WooCommerce
 
+* Include the Facebook Tracking Pixel code on every page
+
+* Track events in your WooCommerce Store:
+1. View Product
+2. Add To Cart
+3. Proceed to Checkout
+4. Order received
+
 == Installation ==
 
 1. Upload plugin to the `/wp-content/plugins/` directory.
@@ -24,7 +32,7 @@ None yet.
 
 == Screenshots ==
 
-None yet.
+1. Customise which events to track, or track them all
 
 == Changelog ==
 
