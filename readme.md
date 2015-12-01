@@ -1,7 +1,8 @@
 # WooCommerce Facebook Conversion Pixel
-
+[![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
+ 
 Set up the Facebook conversion pixel and event tracking for WooCommerce
-
+ 
 Features:
 - Include the Facebook Tracking Pixel code on every page
 - Track events in your WooCommerce Store:
