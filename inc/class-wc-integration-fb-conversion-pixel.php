@@ -29,7 +29,6 @@ class WC_Integration_Facebook_Conversion_Pixel extends WC_Integration {
     // add to cart event
     add_action( 'woocommerce_after_add_to_cart_button', array( &$this, 'add_to_cart' ) ); // single product
     add_action( 'woocommerce_pagination', array( &$this, 'loop_add_to_cart' ) ); // loop
-
   }
 
   /**
@@ -136,6 +135,7 @@ fbq('track', 'ViewContent', <?php echo json_encode( $params ); ?>);
 
     $order_id = isset( $wp->query_vars['order-received'] ) ? $wp->query_vars['order-received'] : 0;
     if( $order_id ) {
+      $params['order_id'] = $order_id;
       $order = new WC_Order( $order_id );
       if( $order->get_items() ) {
         $productids = array();
