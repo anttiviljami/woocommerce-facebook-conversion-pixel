@@ -1,0 +1,89 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Project-Id-Version: WooCommerce Facebook Conversion Pixel\n"
+"POT-Creation-Date: 2015-12-01 18:34+0200\n"
+"PO-Revision-Date: 2015-12-01 18:33+0200\n"
+"Last-Translator: Antti Kuosmanen <antti@seravo.fi>\n"
+"Language-Team: Antti Kuosmanen <antti@seravo.fi>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: wc-fb-conversion-pixel.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:9
+msgid "Facebook"
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:10
+msgid ""
+"Set up the Facebook conversion pixel and event tracking for WooCommerce."
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:40
+msgid "Facebook Tracking ID"
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:42
+msgid ""
+"The numerical unique ID from your Facebook Pixel Tracking Code. Copied from "
+"this line: <code>fbq('init', '<your ID>');</code>"
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:46
+msgid "Track ViewContent Events"
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:48
+msgid "Enable event tracking for when a user views a product page."
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:52
+msgid "Track AddToCart Events"
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:54
+msgid ""
+"Enable event tracking for when a user adds a product to their shopping cart."
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:58
+msgid "Track InitiateCheckout Events"
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:60
+msgid "Enable event tracking for when a user enters the Checkout page."
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:64
+msgid "Track Purchase Events"
+msgstr ""
+
+#: inc/class-wc-integration-fb-conversion-pixel.php:66
+msgid "Enable event tracking for when a user has succesfully made an order."
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce Facebook Conversion Pixel"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/anttiviljami/woocommerce-facebook-conversion-pixel"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Set up the Facebook conversion pixel and event tracking for WooCommerce"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Seravo Oy"
+msgstr ""
