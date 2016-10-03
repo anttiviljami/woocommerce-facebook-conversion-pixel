@@ -74,7 +74,8 @@ class WC_Integration_Facebook_Conversion_Pixel extends WC_Integration {
    */
   public function add_to_cart() {
     if( $this->event_addtocart ) {
-      global $product;
+      global $post;
+      $product = wc_get_product( $post->ID );
       $params = array();
       $params['content_name'] = $product->get_title();
       $params['content_ids'] = array( $product->id );
@@ -117,7 +118,8 @@ fbq('track', 'PageView');
 
 <?php if( is_singular( 'product' ) && $this->event_viewcontent ) : ?>
 <?php
-    global $product;
+    global $post;
+    $product = wc_get_product( $post->ID );
     $params = array();
     $params['content_name'] = $product->get_title();
     $params['content_ids'] = array( $product->get_sku() ? $product->get_sku() : $product->id );
@@ -205,4 +207,3 @@ src="https://www.facebook.com/tr?id=<?php echo esc_html( $this->fbid ); ?>&ev=Pa
 <?php
   }
 }
-
