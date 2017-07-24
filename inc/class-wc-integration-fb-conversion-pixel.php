@@ -104,7 +104,9 @@ class WC_Integration_Facebook_Conversion_Pixel extends WC_Integration {
     if( !$this->fbid ) {
       return;
     }
+    
 ?>
+
 <!-- Facebook Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -161,13 +163,15 @@ fbq('track', 'Purchase', <?php echo json_encode( $params ); ?>);
     $productids = array();
     foreach($cart as $id => $item) {
       $product_id = $item['variation_id'] ? $item['variation_id'] : $item['product_id'];
-      $product = new WC_Product( $product_id );
+      $product = new WC_Product_Factory;
+      $product = $product->get_product(intval($product_id));
       $productids[] = $product->get_sku() ? $product->get_sku() : $product->id;
     }
     $params = array();
     $params['num_items'] = WC()->cart->cart_contents_count;
     $params['value'] = WC()->cart->total;
     $params['currency'] = get_woocommerce_currency();
+    $params['content_type'] = 'product';
     $params['content_ids'] = $productids;
 ?>
 fbq('track', 'InitiateCheckout', <?php echo json_encode( $params ); ?>);
@@ -207,3 +211,4 @@ src="https://www.facebook.com/tr?id=<?php echo esc_html( $this->fbid ); ?>&ev=Pa
 <?php
   }
 }
+
