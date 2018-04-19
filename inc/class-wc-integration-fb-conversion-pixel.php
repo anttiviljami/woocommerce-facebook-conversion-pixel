@@ -83,7 +83,7 @@ class WC_Integration_Facebook_Conversion_Pixel extends WC_Integration {
       $params['value'] = floatval( $product->get_price() );
       $params['currency'] = get_woocommerce_currency();
       // TODO: variable products
-      $this->fb_track_event( 'AddToCart', '.button.alt', $params );
+      $this->fb_track_event( 'AddToCart', '.single_add_to_cart_button', $params );
     }
   }
 
